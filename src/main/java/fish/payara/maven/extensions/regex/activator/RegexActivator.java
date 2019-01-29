@@ -35,20 +35,6 @@ public class RegexActivator implements ProfileActivator {
         return result;
     }
 
-    private String getProperty(ProfileActivationContext context, String propertyName) {
-        // Fetch from -D parameter first
-        String value = context.getUserProperties().get(propertyName);
-        // Then fetch from project properties
-        if (value == null) {
-            value = context.getProjectProperties().get(propertyName);
-        }
-        // Then fetch from system properties
-        if (value == null) {
-            value = context.getSystemProperties().get(propertyName);
-        }
-        return value;
-    }
-
     @Override
     public boolean presentInConfig(Profile profile, ProfileActivationContext context, ModelProblemCollector problems) {
         try {
@@ -67,6 +53,20 @@ public class RegexActivator implements ProfileActivator {
             return false;
         }
         return true;
+    }
+
+    private String getProperty(ProfileActivationContext context, String propertyName) {
+        // Fetch from -D parameter first
+        String value = context.getUserProperties().get(propertyName);
+        // Then fetch from project properties
+        if (value == null) {
+            value = context.getProjectProperties().get(propertyName);
+        }
+        // Then fetch from system properties
+        if (value == null) {
+            value = context.getSystemProperties().get(propertyName);
+        }
+        return value;
     }
 
 }
