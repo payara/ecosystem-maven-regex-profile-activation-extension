@@ -21,7 +21,7 @@ public class RegexActivator implements ProfileActivator {
     public boolean isActive(Profile profile, ProfileActivationContext context, ModelProblemCollector problems) {
         // Get property name and value
         String propertyName = profile.getActivation().getProperty().getName();
-        String propertyValue = context.getProjectProperties().get(propertyName);
+        String propertyValue = getProperty(context, propertyName);
 
         // Get regex
         String regex = profile.getActivation().getProperty().getValue();
@@ -33,6 +33,20 @@ public class RegexActivator implements ProfileActivator {
                 propertyName, propertyValue, result));
 
         return result;
+    }
+
+    private String getProperty(ProfileActivationContext context, String propertyName) {
+        // Fetch from -D parameter first
+        String value = context.getUserProperties().get(propertyName);
+        // Then fetch from project properties
+        if (value == null) {
+            value = context.getProjectProperties().get(propertyName);
+        }
+        // Then fetch from system properties
+        if (value == null) {
+            value = context.getSystemProperties().get(propertyName);
+        }
+        return value;
     }
 
     @Override
