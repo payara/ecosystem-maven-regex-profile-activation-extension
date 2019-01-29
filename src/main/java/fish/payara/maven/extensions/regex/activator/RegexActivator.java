@@ -11,7 +11,7 @@ import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.Logger;
 
-@Component(role = ProfileActivator.class, hint = "Regex Profile Activator")
+@Component(role = RegexActivator.class, hint = "Regex Profile Activator")
 public class RegexActivator implements ProfileActivator {
 
     @Requirement
