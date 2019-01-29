@@ -1,0 +1,135 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>fish.payara.maven.extensions.test</groupId>
+    <artifactId>activation-it</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <magic.file>${project.build.directory}/magic-file</magic.file>
+
+        <property1>abracadabra</property1>
+        <property2>5.184</property2>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>abra</id>
+            <activation>
+                <property>
+                    <name>property1</name>
+                    <value>/abra.+/</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>create-magic-file</id>
+                                <phase>validate</phase>
+                                <configuration>
+                                    <target name="magic-file">
+                                        <echo file="${magic.file}-abra" append="false">${magic.file}-abra</echo>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>payara4</id>
+            <activation>
+                <property>
+                    <name>property2</name>
+                    <value>/4.+/</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>create-magic-file</id>
+                                <phase>validate</phase>
+                                <configuration>
+                                    <target name="magic-file">
+                                        <echo file="${magic.file}-payara4" append="false">${magic.file}-payara4</echo>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>delete-magic-file</id>
+                        <phase>validate</phase>
+                        <configuration>
+                            <target name="magic-file">
+                                <delete file="${magic.file}-abra" />
+                                <delete file="${magic.file}-payara4" />
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>create-magic-file</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>check-magic-file</id>
+                        <phase>validate</phase>
+                        <configuration>
+                            <target name="magic-file">
+                                <!-- Check abra magic file exists -->
+                                <available file="${magic.file}-abra" property="abra.file.exists" />
+                                <fail message="Magic file ${magic.file}-abra missing. The profile probably wasn't activated." unless="abra.file.exists" />
+                                <!-- Check Payara4 magic file doesn't exist -->
+                                <available file="${magic.file}-payara4" property="payara.file.exists" />
+                                <fail message="Magic file ${magic.file}-payara4 missing. The profile probably wasn't activated." if="payara.file.exists" />
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
