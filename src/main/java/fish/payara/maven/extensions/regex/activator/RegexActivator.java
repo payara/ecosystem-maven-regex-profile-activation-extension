@@ -157,7 +157,7 @@ public class RegexActivator implements ProfileActivator {
                 // If the pom contains a parent block with a relativePath, use that to
                 // recursively search
                 if (project.getModel() != null && project.getModel().getParent() != null) {
-                    String relativePath = project.getModel().getParent().getRelativePath();
+                    String relativePath = project.getModel().getParent().getRelativePath().replace("pom.xml", "");
                     if (relativePath != null) {
                         return getPropertyFromPom(new File(projectDirectory, relativePath), propertyName);
                     }
