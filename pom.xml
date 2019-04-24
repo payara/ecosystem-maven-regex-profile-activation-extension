@@ -126,6 +126,7 @@
                     <localRepositoryPath>${project.build.directory}/.m2/repository</localRepositoryPath>
                     <pomIncludes>
                         <include>activation-it</include>
+                        <include>submodule-it</include>
                     </pomIncludes>
                 </configuration>
                 <executions>
