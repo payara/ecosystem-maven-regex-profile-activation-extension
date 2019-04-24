@@ -81,7 +81,14 @@ public class RegexProfileSelector extends DefaultProfileSelector {
     }
 
     /**
-     * Called instead of parent isActive to make sure that an OR gate is used for profile activation.
+     * Called instead of parent isActive to make sure that an OR gate is used for
+     * profile activation.
+     * 
+     * @param profile  the profile to check
+     * @param context  the environment to use in checking the profile
+     * @param problems aggregator for build problems
+     * 
+     * @return if the profile is active.
      */
     protected boolean isActive(Profile profile, ProfileActivationContext context, ModelProblemCollector problems) {
         boolean isActive = false;
