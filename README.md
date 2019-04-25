@@ -13,7 +13,7 @@ You can register this extension with your maven build by specifying it in your `
     <extension>
         <groupId>fish.payara.maven.extensions</groupId>
         <artifactId>regex-profile-activator</artifactId>
-        <version>0.1</version>
+        <version>0.2</version>
     </extension>
 
 </extensions>
