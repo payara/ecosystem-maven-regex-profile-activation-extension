@@ -4,7 +4,7 @@ This maven extension allows activating profiles by checking that a property matc
 
 ## Example Usage
 
-You can register this extension with your maven build by specifying it in your `${project.basedir}/.m2/extensions.xml` file like so:
+You can register this extension with your maven build by specifying it in your `${project.baseir}/.mvn/extensions.xml` file like so:
 
 ~~~
 <extensions xmlns="http://maven.apache.org/EXTENSIONS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
