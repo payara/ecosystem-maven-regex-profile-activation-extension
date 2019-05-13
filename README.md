@@ -38,3 +38,11 @@ The profile above will be active when built with `-Dmyproperty=abracadabra`, or 
 ## Details
 
 This extension will find properties first by checking for properties specified on the command line with `-D`, followed by other maven system properties or environment variables. If none of these are found, the property will be read from discovered pom files in the project hierarchy, checking each parent pom recursively until no more are found.
+
+## Releasing
+
+In order to release, you will need to sign the source, javadoc and artifact JARs. To do this, build the project with the `sign` profile:
+
+~~~
+mvn install -Dsign
+~~~
