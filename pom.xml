@@ -140,42 +140,42 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Create Javadoc JAR. -->
-            <plugin>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.0.1</version>
-                <executions>
-                    <execution>
-                        <id>create-javadoc-jar</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Create source JAR. -->
-            <plugin>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
-                <executions>
-                    <execution>
-                        <id>create-source-jar</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
     <profiles>
         <profile>
-            <id>sign</id>
+            <id>release</id>
             <build>
                 <plugins>
+                    <!-- Create Javadoc JAR. -->
+                    <plugin>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.1.1</version>
+                        <executions>
+                            <execution>
+                                <id>create-javadoc-jar</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- Create source JAR. -->
+                    <plugin>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>create-source-jar</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <!-- Sign artifacts. -->
                     <plugin>
                         <artifactId>maven-gpg-plugin</artifactId>
@@ -183,11 +183,31 @@
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
+                                <phase>verify</phase>
                                 <goals>
                                     <goal>sign</goal>
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                    <!-- Create release bundle -->
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>3.1.1</version>
+                        <executions>
+                            <execution>
+                                <id>create-bundle</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>assembly.xml</descriptor>
+                            </descriptors>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
