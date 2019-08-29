@@ -41,6 +41,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -118,20 +119,30 @@ public class RegexActivator implements ProfileActivator {
      * @param propertyName the property name to fetch.
      */
     private String getProperty(ProfileActivationContext context, String propertyName) {
+        // First get actual property
+        String resolvedPropertyName = propertyName
+                .replaceAll("\\$\\{(.+)\\}", "$1");
+
         // Fetch from -D parameter first
-        String value = context.getUserProperties().get(propertyName);
+        String value = context.getUserProperties().get(resolvedPropertyName);
         // Then fetch from project properties
         if (value == null) {
-            value = context.getProjectProperties().get(propertyName);
+            value = context.getProjectProperties().get(resolvedPropertyName);
         }
         // Then fetch from system properties
         if (value == null) {
-            value = context.getSystemProperties().get(propertyName);
+            value = context.getSystemProperties().get(resolvedPropertyName);
         }
         // If it's still null, try and hard load it from the project pom
         if (value == null) {
-            value = getPropertyFromPom(context.getProjectDirectory(), propertyName);
+            value = getPropertyFromPom(context.getProjectDirectory(), resolvedPropertyName);
         }
+        
+        // If the property is equal to another property, fetch that one
+        if (value != null && value.startsWith("${") && value.endsWith("}")) {
+            return getProperty(context, value.substring(2, value.length() - 1));
+        }
+
         return value;
     }
 
@@ -150,7 +161,17 @@ public class RegexActivator implements ProfileActivator {
         // Read the pom file
         try (InputStream is = new FileInputStream(pomFile)) {
             MavenProject project = new MavenProject(new MavenXpp3Reader().read(is));
-            Object value = project.getProperties().get(propertyName);
+            Object value;
+            if (propertyName.startsWith("project.")) {
+                // Fetch project properties from the model class
+                String fieldName = propertyName.substring(8, propertyName.length());
+                value = getViaReflection(project.getModel(), fieldName);
+                if (value == null && project.getModel().getParent() != null) {
+                    value = getViaReflection(project.getModel().getParent(), fieldName);
+                }
+            } else {
+                value = project.getProperties().get(propertyName);
+            }
             if (value != null) {
                 return value.toString();
             } else {
@@ -167,6 +188,23 @@ public class RegexActivator implements ProfileActivator {
             logger.debug("Error reading project pom file.", ex);
         }
         return null;
+    }
+
+    /**
+     * Fetches a variable via reflection from a given object.
+     * @param object the object containing the value
+     * @param fieldName the name of the field
+     * @return the value if found, or null otherwise.
+     */
+    private static Object getViaReflection(Object object, String fieldName) {
+        try {
+            Field field = object.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return field.get(object);
+        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
+                | SecurityException e) {
+            return null;
+        }
     }
 
 }
