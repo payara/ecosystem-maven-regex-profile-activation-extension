@@ -72,9 +72,9 @@
                         <executions>
                             <execution>
                                 <id>create-magic-file</id>
-                                <phase>validate</phase>
+                                <phase>compile</phase>
                                 <configuration>
-                                    <target name="magic-file">
+                                    <target name="magic-file-abra">
                                         <echo file="${magic.file}-abra" append="false">${magic.file}-abra</echo>
                                     </target>
                                 </configuration>
@@ -103,9 +103,9 @@
                         <executions>
                             <execution>
                                 <id>create-magic-file</id>
-                                <phase>validate</phase>
+                                <phase>compile</phase>
                                 <configuration>
-                                    <target name="magic-file">
+                                    <target name="magic-file-payara4">
                                         <echo file="${magic.file}-payara4" append="false">${magic.file}-payara4</echo>
                                     </target>
                                 </configuration>
@@ -129,11 +129,10 @@
                 <executions>
                     <execution>
                         <id>delete-magic-file</id>
-                        <phase>validate</phase>
+                        <phase>clean</phase>
                         <configuration>
                             <target name="magic-file">
-                                <delete file="${magic.file}-abra" />
-                                <delete file="${magic.file}-payara4" />
+                                <delete file="${magic.file}-*" />
                             </target>
                         </configuration>
                         <goals>
@@ -141,15 +140,8 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>create-magic-file</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                    <execution>
                         <id>check-magic-file</id>
-                        <phase>validate</phase>
+                        <phase>test</phase>
                         <configuration>
                             <target name="magic-file">
                                 <!-- Check abra magic file exists -->
@@ -157,7 +149,8 @@
                                 <fail message="Magic file ${magic.file}-abra missing. The profile probably wasn't activated." unless="abra.file.exists" />
                                 <!-- Check Payara4 magic file doesn't exist -->
                                 <available file="${magic.file}-payara4" property="payara.file.exists" />
-                                <fail message="Magic file ${magic.file}-payara4 missing. The profile probably wasn't activated." if="payara.file.exists" />
+                                <fail message="Magic file ${magic.file}-payara4 present. The profile was incorrectly activated." if="payara.file.exists" />
+
                             </target>
                         </configuration>
                         <goals>
