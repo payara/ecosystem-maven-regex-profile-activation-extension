@@ -51,6 +51,7 @@
         <magic.file>${project.build.directory}/magic-file</magic.file>
 
         <property1>abracadabra</property1>
+        <other.version>5.194-SNAPSHOT</other.version>
     </properties>
 
     <modules>

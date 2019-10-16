@@ -116,6 +116,6 @@ public class RegexActivator implements ProfileActivator {
         String resolvedPropertyName = propertyName
                 .replaceAll("\\$\\{(.+)\\}", "$1");
 
-        return PropertyResolver.get(context, logger).resolve(propertyName);
+        return PropertyResolver.get(context, logger).resolve(resolvedPropertyName);
     }
 }

@@ -80,6 +80,99 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>matching-project-version</id>
+            <activation>
+                <property>
+                    <name>project.version</name>
+                    <value>=[1.0-SNAPSHOT,)</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>create-magic-file-v1</id>
+                                <phase>validate</phase>
+                                <configuration>
+                                    <target name="magic-file-v1">
+                                        <echo file="${magic.file}-v1" append="false">${magic.file}-abra</echo>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>nonmatching-project-version</id>
+            <activation>
+                <property>
+                    <name>project.version</name>
+                    <value>=[1.0,)</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>create-magic-file-v2</id>
+                                <phase>validate</phase>
+                                <configuration>
+                                    <target name="magic-file-v2">
+                                        <echo file="${magic.file}-v2" append="false">${magic.file}-abra</echo>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>matching-parent-property</id>
+            <activation>
+                <property>
+                    <name>other.version</name>
+                    <value>=[5.193,)</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>create-magic-file-v3</id>
+                                <phase>validate</phase>
+                                <configuration>
+                                    <target name="magic-file-v3">
+                                        <echo file="${magic.file}-v3" append="false">${magic.file}-abra</echo>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <build>
@@ -91,10 +184,10 @@
                 <executions>
                     <execution>
                         <id>delete-magic-file</id>
-                        <phase>validate</phase>
+                        <phase>clean</phase>
                         <configuration>
                             <target name="magic-file">
-                                <delete file="${magic.file}-abra" />
+                                <delete file="${magic.file}*" />
                             </target>
                         </configuration>
                         <goals>
@@ -102,20 +195,23 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>create-magic-file</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                    <execution>
                         <id>check-magic-file</id>
-                        <phase>validate</phase>
+                        <phase>test</phase>
                         <configuration>
-                            <target name="magic-file">
+                            <target name="magic-file-abra">
                                 <!-- Check abra magic file exists -->
                                 <available file="${magic.file}-abra" property="abra.file.exists" />
                                 <fail message="Magic file ${magic.file}-abra missing. The profile probably wasn't activated." unless="abra.file.exists" />
+
+                                <available file="${magic.file}-v1" property="v1.file.exists" />
+                                <fail message="Magic file ${magic.file}-v1 missing. The profile probably wasn't activated." unless="v1.file.exists" />
+
+                                <available file="${magic.file}-v2" property="v2.file.exists" />
+                                <fail message="Magic file ${magic.file}-v2 present. The profile shouldn't have been activated." if="v2.file.exists" />
+
+                                <available file="${magic.file}-v3" property="v3.file.exists" />
+                                <fail message="Magic file ${magic.file}-v3 missing. The profile probably wasn't activated." unless="v3.file.exists" />
+
                             </target>
                         </configuration>
                         <goals>

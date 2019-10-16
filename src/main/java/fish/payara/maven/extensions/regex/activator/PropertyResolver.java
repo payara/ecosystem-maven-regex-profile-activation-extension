@@ -48,7 +48,6 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -86,7 +85,7 @@ class PropertyResolver {
         if (parents != null && parents.contains(propertyName)) {
             throw new IllegalArgumentException("Recursive property definition involving "+propertyName);
         }
-        return cache.computeIfAbsent(propertyName, name -> resolve(name, parents == null ? new HashSet<>():parents));
+        return cache.computeIfAbsent(propertyName, name -> resolve(name, parents == null ? new HashSet<>() : parents));
     }
 
     private String resolve(String propertyName, Set<String> parents) {
@@ -106,17 +105,22 @@ class PropertyResolver {
             value = getPropertyFromPom(context.getProjectDirectory(), propertyName);
         }
 
-        // Interpolate any property references in the value:
+        // Interpolate any further property references in the value
         if (value != null) {
             Matcher interpolation = INTERPOLATION.matcher(value);
             StringBuffer sb = new StringBuffer();
             while (interpolation.find()) {
                 String inner = interpolation.group(1);
                 parents.add(propertyName);
-                interpolation.appendReplacement(sb, resolveFromCache(name, parents));
+                String replacement = resolveFromCache(inner, parents);
+                if (replacement == null) {
+                    replacement = "";
+                }
+                interpolation.appendReplacement(sb, replacement);
                 parents.remove(propertyName);
             }
             interpolation.appendTail(sb);
+            value = sb.toString();
         }
         return value;
     }
@@ -192,13 +196,22 @@ class PropertyResolver {
         }
     }
 
-    static PropertyResolver PREVIOUS = null;
+    static PropertyResolver CACHED = null;
+
+    /**
+     * Get valid resolver for given context.
+     * Since resolution is often repeated in same context by both activators, the resolver is cached.
+     *
+     * @param context
+     * @param logger
+     * @return
+     */
     static PropertyResolver get(ProfileActivationContext context, Logger logger) {
-        if (PREVIOUS != null && PREVIOUS.context.equals(context)) {
-            return PREVIOUS;
+        if (CACHED != null && CACHED.context.equals(context)) {
+            return CACHED;
         }
-        PREVIOUS = new PropertyResolver(context, logger);
-        return PREVIOUS;
+        CACHED = new PropertyResolver(context, logger);
+        return CACHED;
     }
 
 }

@@ -60,7 +60,7 @@ public class VersionActivator implements ProfileActivator {
     public boolean isActive(Profile profile, ProfileActivationContext context, ModelProblemCollector problems) {
         VersionRange range = parseSpec(profile);
         String value = getPropertyValue(context, profile.getActivation().getProperty().getName());
-        if (value == null) {
+        if (value == null || value.isEmpty()) {
             logger.warn("Did not find value of property "+profile.getActivation().getProperty().getName());
             return false;
         }
