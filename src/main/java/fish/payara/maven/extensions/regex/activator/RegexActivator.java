@@ -56,7 +56,7 @@ import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
-@Component(role = RegexActivator.class, hint = "Regex Profile Activator")
+@Component(role = ExtensionActivator.class, hint = "Regex Profile Activator")
 public class RegexActivator implements ProfileActivator {
 
     @Requirement

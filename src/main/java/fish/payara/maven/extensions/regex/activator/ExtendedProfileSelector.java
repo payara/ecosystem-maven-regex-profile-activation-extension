@@ -52,13 +52,19 @@ import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.Logger;
 
+/**
+ * The profile selector evaluates extension activators in addition to standard ones.
+ * Activator provided in this artifact are combined with condition OR to standard artifacts.
+ * Otherwise, standard property activator kicks in and prevents profile activation, as it requires value to be
+ * equal.
+ */
 @Component(role = ProfileSelector.class, hint = "default")
-public class RegexProfileSelector extends DefaultProfileSelector {
+public class ExtendedProfileSelector extends DefaultProfileSelector {
 
     @Requirement
     private Logger logger;
 
-    @Requirement(role = RegexActivator.class)
+    @Requirement(role = ExtensionActivator.class)
     protected List<ProfileActivator> activatorList = new ArrayList<>();
 
     @Override
