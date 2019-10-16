@@ -37,26 +37,18 @@
  */
 package fish.payara.maven.extensions.regex.activator;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.apache.maven.model.Profile;
 import org.apache.maven.model.building.ModelProblemCollector;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.profile.ProfileActivationContext;
 import org.apache.maven.model.profile.activation.ProfileActivator;
-import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.Logger;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
-@Component(role = RegexActivator.class, hint = "Regex Profile Activator")
+@Component(role = ExtensionActivator.class, hint = "Regex Profile Activator")
 public class RegexActivator implements ProfileActivator {
 
     @Requirement
@@ -120,91 +112,10 @@ public class RegexActivator implements ProfileActivator {
      */
     private String getProperty(ProfileActivationContext context, String propertyName) {
         // First get actual property
+        // This is strange behavior that didn't move to common code
         String resolvedPropertyName = propertyName
                 .replaceAll("\\$\\{(.+)\\}", "$1");
 
-        // Fetch from -D parameter first
-        String value = context.getUserProperties().get(resolvedPropertyName);
-        // Then fetch from project properties
-        if (value == null) {
-            value = context.getProjectProperties().get(resolvedPropertyName);
-        }
-        // Then fetch from system properties
-        if (value == null) {
-            value = context.getSystemProperties().get(resolvedPropertyName);
-        }
-        // If it's still null, try and hard load it from the project pom
-        if (value == null) {
-            value = getPropertyFromPom(context.getProjectDirectory(), resolvedPropertyName);
-        }
-        
-        // If the property is equal to another property, fetch that one
-        if (value != null && value.startsWith("${") && value.endsWith("}")) {
-            return getProperty(context, value.substring(2, value.length() - 1));
-        }
-
-        return value;
+        return PropertyResolver.get(context, logger).resolve(resolvedPropertyName);
     }
-
-    /**
-     * Will manually read the pom and any discoverable parent poms until a property
-     * is found.
-     */
-    private String getPropertyFromPom(File projectDirectory, String propertyName) {
-
-        // Look for the pom
-        File pomFile = new File(projectDirectory, "pom.xml");
-        if (!pomFile.exists()) {
-            return null;
-        }
-
-        // Read the pom file
-        try (InputStream is = new FileInputStream(pomFile)) {
-            MavenProject project = new MavenProject(new MavenXpp3Reader().read(is));
-            Object value;
-            if (propertyName.startsWith("project.")) {
-                // Fetch project properties from the model class
-                String fieldName = propertyName.substring(8, propertyName.length());
-                value = getViaReflection(project.getModel(), fieldName);
-                if (value == null && project.getModel().getParent() != null) {
-                    value = getViaReflection(project.getModel().getParent(), fieldName);
-                }
-            } else {
-                value = project.getProperties().get(propertyName);
-            }
-            if (value != null) {
-                return value.toString();
-            } else {
-                // If the pom contains a parent block with a relativePath, use that to
-                // recursively search
-                if (project.getModel() != null && project.getModel().getParent() != null) {
-                    String relativePath = project.getModel().getParent().getRelativePath().replace("pom.xml", "");
-                    if (relativePath != null) {
-                        return getPropertyFromPom(new File(projectDirectory, relativePath), propertyName);
-                    }
-                }
-            }
-        } catch (IOException | XmlPullParserException ex) {
-            logger.debug("Error reading project pom file.", ex);
-        }
-        return null;
-    }
-
-    /**
-     * Fetches a variable via reflection from a given object.
-     * @param object the object containing the value
-     * @param fieldName the name of the field
-     * @return the value if found, or null otherwise.
-     */
-    private static Object getViaReflection(Object object, String fieldName) {
-        try {
-            Field field = object.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
-            return field.get(object);
-        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
-                | SecurityException e) {
-            return null;
-        }
-    }
-
 }

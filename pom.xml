@@ -42,7 +42,7 @@
 
     <groupId>fish.payara.maven.extensions</groupId>
     <artifactId>regex-profile-activator</artifactId>
-    <version>0.3</version>
+    <version>0.4-SNAPSHOT</version>
 
     <name>Regex Profile Activator Maven Extension</name>
     <description>Allow profile activation using regex expressions.</description>
@@ -118,7 +118,12 @@
                 <artifactId>maven-invoker-plugin</artifactId>
                 <version>3.2.0</version>
                 <configuration>
-                    <!-- <debug>true</debug> -->
+                    <goals>
+                        <goal>clean</goal>
+                        <goal>test</goal>
+                    </goals>
+<!--                    <debug>true</debug>-->
+<!--                    <mavenExecutable>mvnDebug</mavenExecutable>-->
                     <showErrors>true</showErrors>
                     <streamLogs>true</streamLogs>
                     <projectsDirectory>${project.basedir}/src/it</projectsDirectory>
