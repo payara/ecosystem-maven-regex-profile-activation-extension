@@ -118,6 +118,68 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>version1</id>
+            <activation>
+                <property>
+                    <name>property2</name>
+                    <value>=[4,)</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>create-magic-file-version1</id>
+                                <phase>compile</phase>
+                                <configuration>
+                                    <target name="magic-file-version1">
+                                        <echo file="${magic.file}-version1" append="false">${magic.file}-version1</echo>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>version2</id>
+            <activation>
+                <property>
+                    <name>property2</name>
+                    <value>=[4,5.184),(5.184,)</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>create-magic-file-version2</id>
+                                <phase>compile</phase>
+                                <configuration>
+                                    <target name="magic-file-version2">
+                                        <echo file="${magic.file}-version2" append="false">${magic.file}-version2</echo>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <build>
@@ -150,6 +212,12 @@
                                 <!-- Check Payara4 magic file doesn't exist -->
                                 <available file="${magic.file}-payara4" property="payara.file.exists" />
                                 <fail message="Magic file ${magic.file}-payara4 present. The profile was incorrectly activated." if="payara.file.exists" />
+
+                                <available file="${magic.file}-version1" property="version1.file.exists" />
+                                <fail message="Magic file ${magic.file}-version1 missing. The profile probably wasn't activated." unless="version1.file.exists" />
+
+                                <available file="${magic.file}-version2" property="version2.file.exists" />
+                                <fail message="Magic file ${magic.file}-version2 present. The profile probably was incorrectly activated." if="version2.file.exists" />
 
                             </target>
                         </configuration>
