@@ -73,14 +73,7 @@ public class VersionActivator implements ProfileActivator {
     }
 
     private String getPropertyValue(ProfileActivationContext context, String name) {
-        String value = context.getUserProperties().get( name );
-        if ( value  == null ) {
-            value = context.getProjectProperties().get( name );
-        }
-        if ( value == null ) {
-            value = context.getSystemProperties().get( name );
-        }
-        return value;
+        return PropertyResolver.get(context, logger).resolve(name);
     }
 
     @Override
