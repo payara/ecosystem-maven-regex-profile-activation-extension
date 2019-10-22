@@ -78,8 +78,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -122,8 +122,8 @@
                         <goal>clean</goal>
                         <goal>test</goal>
                     </goals>
-<!--                    <debug>true</debug>-->
-<!--                    <mavenExecutable>mvnDebug</mavenExecutable>-->
+		    <!--<debug>true</debug>
+		    <mavenExecutable>mvnDebug</mavenExecutable>-->
                     <showErrors>true</showErrors>
                     <streamLogs>true</streamLogs>
                     <projectsDirectory>${project.basedir}/src/it</projectsDirectory>
@@ -144,6 +144,25 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <rules>
+                        <requireJavaVersion>
+                            <message>JDK7 only please</message>
+                            <version>[1.7,1.8)</version>
+                        </requireJavaVersion>
+                    </rules>
+                </configuration>
             </plugin>
         </plugins>
     </build>
