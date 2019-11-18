@@ -83,9 +83,14 @@ class PropertyResolver {
 
     private String resolveFromCache(String propertyName, Set<String> parents) {
         if (parents != null && parents.contains(propertyName)) {
-            throw new IllegalArgumentException("Recursive property definition involving "+propertyName);
+            throw new IllegalArgumentException("Recursive property definition involving " + propertyName);
         }
-        return cache.computeIfAbsent(propertyName, name -> resolve(name, parents == null ? new HashSet<>() : parents));
+
+        if (!cache.containsKey(propertyName)) {
+            cache.put(propertyName, resolve(propertyName, parents == null ? new HashSet<String>() : parents));
+        }
+
+        return cache.get(propertyName);
     }
 
     private String resolve(String propertyName, Set<String> parents) {
@@ -138,7 +143,10 @@ class PropertyResolver {
             return null;
         }
 
-        MavenProject project = projectCache.computeIfAbsent(pomFile, this::readMavenProject);
+        MavenProject project = null;
+        if (!projectCache.containsKey(pomFile)) {
+            project = readMavenProject(pomFile);
+        }
         if (project == null) {
             return null;
         }

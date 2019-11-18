@@ -49,7 +49,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <magic.file>${project.build.directory}/magic-file</magic.file>
+        <magic.file>${project.build.directory}${file.separator}magic-file</magic.file>
 
         <property1>abracadabra</property1>
         <property2>5.184</property2>
