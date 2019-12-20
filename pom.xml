@@ -42,7 +42,7 @@
 
     <groupId>fish.payara.maven.extensions</groupId>
     <artifactId>regex-profile-activator</artifactId>
-    <version>0.4</version>
+    <version>0.5</version>
 
     <name>Regex Profile Activator Maven Extension</name>
     <description>Allow profile activation using regex expressions.</description>
