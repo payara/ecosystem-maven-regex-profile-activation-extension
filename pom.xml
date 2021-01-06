@@ -132,6 +132,7 @@
                     <pomIncludes>
                         <include>activation-it</include>
                         <include>project-property-it</include>
+                        <include>project-property-with-parent-it</include>
                         <include>submodule-it</include>
                     </pomIncludes>
                 </configuration>
