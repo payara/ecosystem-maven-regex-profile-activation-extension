@@ -2,6 +2,8 @@
 
 This maven extension allows activating profiles by checking that a property matches a given regex, rather than an exact value.
 
+**ATTENTION**: Support for this repository is handled in the [Ecosystem Support repository](https://github.com/payara/ecosystem-support)
+
 ## Example Usage
 
 You can register this extension with your maven build by specifying it in your `${project.baseir}/.mvn/extensions.xml` file like so:
