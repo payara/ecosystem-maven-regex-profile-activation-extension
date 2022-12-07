@@ -46,6 +46,8 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
+import com.google.common.base.Strings;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -169,7 +171,8 @@ class PropertyResolver {
             // recursively search
             if (project.getModel() != null && project.getModel().getParent() != null) {
                 String relativePath = project.getModel().getParent().getRelativePath().replace("pom.xml", "");
-                if (relativePath != null) {
+                
+                if (!Strings.isNullOrEmpty(relativePath)) {
                     return getPropertyFromPom(new File(projectDirectory, relativePath), propertyName);
                 }
             }
